@@ -32,13 +32,13 @@ void stopMyEventLoop(aeEventLoop *eventLoop){
 }
 int createFileEvent(aeEventLoop *eventLoop,int fd,int mask,aeFileProc * proc,void * clientData){
 	aeFileEvent * fileEvent = eventLoop->events+fd;
-	fileEvent->mask |= mask;
-	if (mask | AE_READABLE)  fileEvent->rfileProc = proc;
-	if (mask | AE_WRITABLE)  fileEvent->wfileProc = proc;
+	if (mask & AE_READABLE)  fileEvent->rfileProc = proc;
+	if (mask & AE_WRITABLE)  fileEvent->wfileProc = proc;
 	fileEvent->clientData = clientData;
 
 	if (aeApiAddEvent(eventLoop,fd,mask) == -1)  return -1;
 	if (fd > eventLoop->maxFd) eventLoop->maxFd = fd;
+	fileEvent->mask |= mask;
 
 	return 0;
 }
@@ -58,6 +58,7 @@ int aeProcessEvents(aeEventLoop *eventLoop, int flags){
 	tv.tv_usec += 5;
 
 	numevents = aeApiPoll(eventLoop,NULL);
+	return numevents;
 
 }
 //int aeWait(int fd, int mask, long long milliseconds);

@@ -25,6 +25,7 @@
 #include<stdlib.h>
 #include<sys/epoll.h>
 
+#define perr() printf("error no: %d  :%s\n",errno,strerror(errno));
 
 void aeGetTime(long *seconds, long *milliseconds);
 

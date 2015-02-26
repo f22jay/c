@@ -1,11 +1,11 @@
 C_SRC = $(wildcard *.c)
 C_OBJ = $(patsubst %.c, %.o, $(C_SRC))
 CC=gcc
-CFLAGS=-c 
+CFLAGS=-c -g
 all: main
 
 main: ${C_OBJ}
-	$(CC) ${C_OBJ} -o $@
+	$(CC) ${C_OBJ} -g -o $@
 
 ${C_OBJ}:%.o:%.c
 	$(CC) $(CFLAGS) $<  -o $@

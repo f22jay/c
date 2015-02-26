@@ -37,11 +37,11 @@ int aeApiAddEvent(aeEventLoop *eventLoop, int fd, int mask) {
 		EPOLL_CTL_ADD : EPOLL_CTL_MOD;
 	struct epoll_event ee;
 	ee.events = 0;
-	if (mask | AE_READABLE) {
+	if (mask & AE_READABLE) {
 		ee.events |= EPOLLIN;
 	}
 
-	if (mask | AE_WRITABLE) {
+	if (mask & AE_WRITABLE) {
 		ee.events |= EPOLLOUT;
 	}
 	ee.data.u64 = 0; /* avoid valgrind warning */
