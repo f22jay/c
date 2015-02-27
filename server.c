@@ -11,6 +11,7 @@
 #include "net.h"
 #include<sys/socket.h>
 #include<sys/types.h>
+#include<sys/stat.h>
 #include<netinet/in.h>
 #include<fcntl.h>
 #include<stdlib.h>

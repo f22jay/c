@@ -1,7 +1,8 @@
 C_SRC = $(wildcard *.c)
 C_OBJ = $(patsubst %.c, %.o, $(C_SRC))
 CC=gcc
-CFLAGS=-c -g
+CFLAGS=-c -g -Wall
+OBJ_DIR=./obj
 all: main
 
 main: ${C_OBJ}
