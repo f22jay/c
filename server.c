@@ -8,6 +8,7 @@
  *
  ================================================================*/
 #include "event.h"
+#include "http.h"
 #include "net.h"
 #include<sys/socket.h>
 #include<sys/types.h>
@@ -21,9 +22,6 @@
 #include "tool.h"
 #include "server.h"
 
-typedef struct clientData{
-	int fd;
-} clientData;
 
 int sina;
 
@@ -33,7 +31,6 @@ void sockServer(struct aeEventLoop *eventLoop, int fd, void *client, int mask){
 
 	assert (mask & AE_READABLE);
 	clientData *data = malloc(sizeof(clientData));
-	data->fd = sina;
 	int connecFd = accept(fd,(struct sockaddr *)&address,&len);
 	if ( connecFd < 0 )
 		perr();
@@ -42,20 +39,30 @@ void sockServer(struct aeEventLoop *eventLoop, int fd, void *client, int mask){
 }
 
 void client_read(struct aeEventLoop *eventLoop, int fd, void *data, int mask){
-	char buf[1000];
-	read(fd,buf,1000);
-	puts(buf);
+	accept_request(fd,data);
 	createFileEvent(eventLoop,fd,AE_WRITABLE,client_write,data);
 }
 void client_write(struct aeEventLoop *eventLoop, int fd, void *data, int mask){
-	int file = ((clientData *)data)->fd;
-	struct stat stat_buf;
-	fstat(file,&stat_buf);
-	char *buf = "hello";
-	off_t offset = 0;
-	sendfile(fd,file,&offset,stat_buf.st_size);
-	/*write(fd,buf,5);*/
-	deleteFileEvent(eventLoop,fd,AE_WRITABLE);
+
+      clientData * result =  (clientData *)data;
+	  if (result->status)
+		  serve_file(fd,result->path);
+	  else {
+		  not_found(fd);
+	  }
+     deleteFileEvent(eventLoop,fd,AE_WRITABLE);
+     deleteFileEvent(eventLoop,fd,AE_READABLE);
+	 close(fd);
+
+/*
+ *    int file = ((clientData *)data)->fd;
+ *    struct stat stat_buf;
+ *    fstat(file,&stat_buf);
+ *    char *buf = "hello";
+ *    off_t offset = 0;
+ *    sendfile(fd,file,&offset,stat_buf.st_size);
+ *    [>write(fd,buf,5);<]
+ */
 }
 
 void main(){
